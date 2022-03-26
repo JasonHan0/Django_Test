@@ -11,6 +11,8 @@
     </div>
     <form method="post" class="post-form" action="{% url 'common:login' %}">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">  <!-- 로그인 성공후 이동되는 URL -->
+        {% comment %} 로그인 후 next 파라미터에 있는 URL로 페이지를 이동하려면 로그인 템플릿에 위와 같이 hidden 타입의 next 항목 추가 {% endcomment %}
         {% include "form_errors.html" %}       <!-- form_errors.html 템플릿은 로그인 실패시 로그인이 왜 실패했는지 알려주는 역할 -->
         <!-- 로그인에 사용되는 사용자ID를 의미하는 username과 비밀번호를 의미하는 password 항목은 django.contrib.auth 앱이 요구하는 하는 필수항목 -->
         <div class="form-group">

@@ -30,13 +30,13 @@ class QuestionForm(forms.ModelForm):        # forms.ModelForm을 상속
             'content': '내용',
         }
 
-    class AnswerForm(forms.ModelForm):
-        class Meta:
-            model = Answer
-            fields = ['content']
-            labels = {
-                'content': '답변내용',
-            }
+class AnswerForm(forms.ModelForm):
+    class Meta:
+        model = Answer
+        fields = ['content']
+        labels = {
+            'content': '답변내용',
+        }
 # class Userlistentime(forms.ModelForm):
 #     class Meta:
 #         model = Music  # 사용할 모델

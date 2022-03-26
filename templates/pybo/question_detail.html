@@ -38,7 +38,11 @@
         </div>
         {% endif %}                               
         <div class="form-group">
-            <textarea name="content" id="content" class="form-control" rows="10"></textarea>
+            {% comment %} <textarea name="content" id="content" class="form-control" rows="10"></textarea> {% endcomment %}
+            <textarea {% if not user.is_authenticated %}disabled{% endif %}
+              name="content" id="content" class="form-control" rows="10"></textarea>
+              {% comment %} 로그인 상태가 아닌 경우 textarea 태그에 disabled 속성을 적용하여 입력을 못하게 만듬, 
+              {% if not user.is_authenticated %} 태그는 현재 사용자가 로그아웃 상태인지를 체크하는 태그 {% endcomment %}
         </div>
         <input type="submit" value="답변등록" class="btn btn-primary">
     </form>

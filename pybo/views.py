@@ -2,9 +2,18 @@
 from django.shortcuts import render, get_object_or_404, redirect      # render 함수는 파이썬 데이터를 템플릿에 적용하여 HTML로 반환하는 함수
 from django.utils import timezone
 from .models import Question, Answer
-from .forms import QuestionForm
+from .forms import QuestionForm, AnswerForm
 from django.core.paginator import Paginator     # 페이징을 위해 사용하는 클래스
-
+from django.contrib.auth.decorators import login_required
+"""
+request.user가 User 객체가 아닌 AnonymousUser 객체
+request.user에는 로그아웃 상태이면 AnonymousUser 객체가, 로그인 상태이면 User 객체가 들어있는데, 앞에서 우리는 author 속성을 정의할 때 User를 이용하도록 되어 있음
+그래서 answer.author = request.user에서 User 대신 AnonymousUser가 대입되어 오류가 발생
+문제를 해결하려면 request.user를 사용하는 함수에 @ login_required 애너테이션을 사용해야 함(로그인이 필요한 함수를 의미)
+answer_create 함수와 question_create 함수는 함수내에서 request.user를 사용하므로 로그인이 필요한 함수
+로그아웃 상태에서 @login_required 어노테이션이 적용된 함수가 호출되면 자동으로 로그인 화면으로 이동
+@login_required 어노테이션은 login_url='common:login' 처럼 로그인 URL을 지정할 수 있음
+"""
 
 def index(request):
     """
@@ -46,6 +55,8 @@ def detail(request, question_id):
 
 # question.answer_set.create(content=request.POST.get('content'), create_date=timezone.now())     # POST로 전송된 폼(form) 데이터 항목 중 content 값을 의미 
 
+
+@login_required(login_url='common:login')   # 로그인이 필요한 함수를 의미
 def answer_create(request, question_id):
     """
     pybo 답변등록
@@ -58,6 +69,8 @@ def answer_create(request, question_id):
         form = AnswerForm(request.POST)
         if form.is_valid():
             answer = form.save(commit=False)
+            answer.author = request.user  # author 속성에 로그인 계정 저장 // 질문, 답변에 글쓴이를 추가
+            # 답변의 글쓴이는 현재 로그인한 계정이므로 answer.author = request.user로 처리, request.user는 현재 로그인한 계정의 User 모델 객체
             answer.create_date = timezone.now()
             answer.question = question
             answer.save()
@@ -67,6 +80,8 @@ def answer_create(request, question_id):
     context = {'question': question, 'form': form}
     return render(request, 'pybo/question_detail.html', context)  
 
+
+@login_required(login_url='common:login')
 def question_create(request):
     """
     pybo 질문등록
@@ -85,7 +100,8 @@ def question_create(request):
                         # commit=False는 임시 저장을 의미 // 실제 데이터는 아직 데이터베이스에 저장되지 않은 상태
                         # 여기서 form.save(commit=False) 대신 form.save()를 수행하면 Question 모델의 create_date에 값이 없다는 오류가 발생
                         # QuestionForm에는 현재 subject, content 속성만 정의되어 있고 create_date 속성은 없기 때문
-                        # 그래서 임시 저장을 한 후 question 객체를 리턴받아 create_date에 값을 설정한 후 question.save()로 실제 저장                        
+                        # 그래서 임시 저장을 한 후 question 객체를 리턴받아 create_date에 값을 설정한 후 question.save()로 실제 저장       
+            question.author = request.user  # author 속성에 로그인 계정 저장
             question.create_date = timezone.now() # 중요! // create_date 속성은 데이터 저장 시점에 자동 생성해야 하는 값이므로 QuestionForm에 등록하여 사용하지 않는다.  
             question.save()
             return redirect('pybo:index')   #  저장이 완료되면 return redirect('pybo:index')를 호출하여 질문 목록 화면으로 이동            
