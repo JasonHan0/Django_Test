@@ -1,26 +1,47 @@
 from django.urls import path
 
-from . import views
+# from . import views # 이제 이 뷰파일은 사용하지 않는다.
+from .views import base_views, question_views, answer_views, comment_views
 
 app_name = 'pybo'
 
+# /pybo URL은 config/urls.py 파일에 매핑된 pybo/와 pybo/urls.py 파일에 매핑된 '' 이 더해져 내부 함수와 매핑
 urlpatterns = [
-    # /pybo URL은 config/urls.py 파일에 매핑된 pybo/ 와 pybo/urls.py 파일에 매핑된 '' 이 더해져 views.index 함수와 매핑
-    path('', views.index, name='index'),
-    path('<int:question_id>/', views.detail, name='detail'),
-    path('answer/create/<int:question_id>/', views.answer_create, name='answer_create'),
-    path('question/create/', views.question_create, name='question_create'),
-    path('question/modify/<int:question_id>/', views.question_modify, name='question_modify'),
-    path('question/delete/<int:question_id>/', views.question_delete, name='question_delete'),
-    path('answer/modify/<int:answer_id>/', views.answer_modify, name='answer_modify'),
-    path('answer/delete/<int:answer_id>/', views.answer_delete, name='answer_delete'),
-    path('comment/create/question/<int:question_id>/', views.comment_create_question, name='comment_create_question'),
-    path('comment/modify/question/<int:comment_id>/', views.comment_modify_question, name='comment_modify_question'),
-    path('comment/delete/question/<int:comment_id>/', views.comment_delete_question, name='comment_delete_question'),
-    path('comment/create/answer/<int:answer_id>/', views.comment_create_answer, name='comment_create_answer'),  
-    # 댓글을 등록할 경우에는 답변 id 번호(<int:answer_id>)를 사용
-    path('comment/modify/answer/<int:comment_id>/', views.comment_modify_answer, name='comment_modify_answer'), 
-    # 댓글을 수정하거나 삭제할 경우에는 댓글의 id번호(<int:comment_id>)를 사용
-    path('comment/delete/answer/<int:comment_id>/', views.comment_delete_answer, name='comment_delete_answer'),
+    
+    # base_views.py
+    path('',
+        base_views.index, name='index'),
+    path('<int:question_id>/',
+        base_views.detail, name='detail'),
+
+    # question_views.py
+    path('question/create/',
+        question_views.question_create, name='question_create'),
+    path('question/modify/<int:question_id>/',
+        question_views.question_modify, name='question_modify'),
+    path('question/delete/<int:question_id>/',
+        question_views.question_delete, name='question_delete'),
+
+    # answer_views.py
+    path('answer/create/<int:question_id>/',
+        answer_views.answer_create, name='answer_create'),
+    path('answer/modify/<int:answer_id>/',
+        answer_views.answer_modify, name='answer_modify'),
+    path('answer/delete/<int:answer_id>/',
+        answer_views.answer_delete, name='answer_delete'),
+
+    # comment_views.py
+    path('comment/create/question/<int:question_id>/',
+        comment_views.comment_create_question, name='comment_create_question'),
+    path('comment/modify/question/<int:comment_id>/',
+        comment_views.comment_modify_question, name='comment_modify_question'),
+    path('comment/delete/question/<int:comment_id>/',
+        comment_views.comment_delete_question, name='comment_delete_question'),
+    path('comment/create/answer/<int:answer_id>/',
+        comment_views.comment_create_answer, name='comment_create_answer'),
+    path('comment/modify/answer/<int:comment_id>/',
+        comment_views.comment_modify_answer, name='comment_modify_answer'),
+    path('comment/delete/answer/<int:comment_id>/',
+        comment_views.comment_delete_answer, name='comment_delete_answer'),
 ]
 

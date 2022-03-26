@@ -1,0 +1,14 @@
+from .base_views import *
+from .question_views import *
+from .answer_views import *
+from .comment_views import *
+
+# views 디렉터리의 __init__.py 파일에서 views 디렉터리에 있는 base_views.py 등의 모든 뷰 파일의 함수를 import 했기 때문에 
+# pybo/urls.py와 같은 다른 모듈에서 views 모듈의 함수를 사용하는 부분을 수정할 필요가 없다.
+
+
+# 장고는 디버깅시 보통 urls.py 파일에서 URL에 매핑된 함수를 찾는것으로 시작
+# 하지만 이 방법을 사용하면 urls.py 파일에 매핑된 함수명만 알수 있고 어떤 뷰 파일의 함수인지는 알 수가 없다. 
+# 이는 views 디렉터리의 모든 뷰 파일을 찾아봐야 하는 불편함을 초래
+# 이러한 이유로 혼자가 아닌 여러명이 함께 하는 프로젝트라면 이 방법은 매우 좋지 않음
+# 조금 더 좋은 방법은 views 디렉터리의 __init__.py 파일을 제거하고 pybo/urls.py에서 views.index 대신 base_views.index 와 같이 전체 경로를 써주는 방법이다.
