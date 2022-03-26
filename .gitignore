@@ -2,3 +2,4 @@
 *.crdownload
 Scripts/
 migrations/
+pybo/__pycache__/views.cpython-38.pyc
