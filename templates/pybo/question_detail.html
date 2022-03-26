@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container my-3">
-     <!-- 사용자오류 표시 -->
-     {% comment %} 비 정상적인 방법으로 질문을 수정할 경우 오류를 보여주어야 하므로 필요한 부분 {% endcomment %}
+    <!-- 사용자오류 표시 -->
+    {% comment %} 비 정상적인 방법으로 질문을 수정할 경우 오류를 보여주어야 하므로 필요한 부분 {% endcomment %}
     {% if messages %}
     <div class="alert alert-danger my-3" role="alert">
     {% for message in messages %}
@@ -12,111 +12,134 @@
     </div>
     {% endif %}
     <h2 class="border-bottom py-2">{{ question.subject }}</h2>
-    <div class="card my-3">
-        <div class="card-body">
-            <div class="card-text" style="white-space: pre-line;">{{ question.content }}</div>
-            <div class="d-flex justify-content-end">
-                {% comment %} 글쓴이와 작성일시가 함께 보이도록 수정, 부트스트랩을 이용하여 여백과 정렬 등의 디자인 변경 {% endcomment %}
-                {% if question.modify_date %}
-                <div class="badge badge-light p-2 text-left mx-3">
-                    <div class="mb-2">수정일시</div>     {% comment %} 수정일시 보이도록 {% endcomment %}
-                    <div>{{ question.modify_date }}</div>
-                </div>
-                {% endif %}
-                <div class="badge badge-light p-2 text-left">
-                    <div class="mb-2">{{ question.author.username }}</div>
-                    <div>{{ question.create_date }}</div>
-                </div>
-            </div>
-            {% if request.user == question.author %}  {% comment %} 수정 버튼은 로그인한 사용자와 글쓴이가 동일한 경우에만 노출되도록 적용 {% endcomment %}
-            <div class="my-3">
-                <a href="{% url 'pybo:question_modify' question.id  %}"   {% comment %} URL매핑을 추가 필요함 {% endcomment %}
-                    class="btn btn-sm btn-outline-secondary">수정</a>
-                <a href="#" class="delete btn btn-sm btn-outline-secondary"  {% comment %} <삭제> 버튼은 <수정> 버튼과는 달리 href 속성값을 "#"로 설정 {% endcomment %}
-                    data-uri="{% url 'pybo:question_delete' question.id  %}">삭제</a>
-                    {% comment %} 삭제를 실행할 URL을 얻기 위해 data-uri 속성을 추가, <삭제> 버튼이 눌리는 이벤트를 확인할 수 있도록 class 속성에 "delete" 항목 추가 {% endcomment %}
-                    {% comment %} data-uri 속성은 제이쿼리에서 $(this).data('uri')와 같이 사용하여 그 값을 얻을 수 있음 {% endcomment %}
-            </div>
-            {% endif %}
-            <!-- 질문 댓글 Start -->
-            {% if question.comment_set.count > 0 %}
-            <div class="mt-3">
-            {% for comment in question.comment_set.all %}  <!-- 등록한 댓글을 출력 -->
-            {% comment %} 질문에 등록된 댓글을 보여 주도록 여기부터 {% endfor %} 사이에 댓글 내용과 글쓴이, 작성일시를 출력 {% endcomment %}
-            {% comment %} 댓글 글쓴이와 로그인한 사용자가 같으면 '수정', '삭제' 링크가 보이고, for 문 바깥쪽에는 댓글을 작성할 수 있는 '댓글 추가 ..' 링크도 추가 {% endcomment %}
-                <div class="comment py-2 text-muted">  <!-- 댓글 각각에 comment 스타일 지정 -->
-                    <span style="white-space: pre-line;">{{ comment.content }}</span>
-                    <span>
-                        - {{ comment.author }}, {{ comment.create_date }}
-                        {% if comment.modify_date %}
-                        (수정:{{ comment.modify_date }})
+    <div class="row my-3">
+        <div class="col-1"> <!-- 추천영역 - 1/12 만큼은 추천영역이 차지 -->
+            {% comment %} 추천 영역에는 현재의 총 추천수를 보여주고 추천을 할 수 있는 버튼을 추가 {% endcomment %}
+            <div class="bg-light text-center p-3 border font-weight-bolder mb-1">{{question.voter.count}}</div>
+            <a href="#" data-uri="{% url 'pybo:vote_question' question.id  %}"
+                class="recommend btn btn-sm btn-secondary btn-block my-1">추천</a>
+        </div>
+        <div class="col-11"> <!-- 질문영역 - 11/12 만큼은 기존 질문영역이 차지 -->
+            {% comment %} 추천 영역을 강조하기 위해 이와 같이 영역을 분리 {% endcomment %}
+            <!-- 아래는 기존내용 -->
+            <div class="card">  <!-- my-3 삭제 -->
+                <div class="card-body">
+                    <div class="card-text" style="white-space: pre-line;">{{ question.content }}</div>
+                    <div class="d-flex justify-content-end">
+                        {% comment %} 글쓴이와 작성일시가 함께 보이도록 수정, 부트스트랩을 이용하여 여백과 정렬 등의 디자인 변경 {% endcomment %}
+                        {% if question.modify_date %}
+                        <div class="badge badge-light p-2 text-left mx-3">
+                            <div class="mb-2">수정일시</div>     {% comment %} 수정일시 보이도록 {% endcomment %}
+                            <div>{{ question.modify_date }}</div>
+                        </div>
                         {% endif %}
-                    </span>
-                    {% if request.user == comment.author %}
-                    <a href="{% url 'pybo:comment_modify_question' comment.id  %}" class="small">수정</a>,
-                    <a href="#" class="small delete" 
-                    data-uri="{% url 'pybo:comment_delete_question' comment.id  %}">삭제</a>
+                        <div class="badge badge-light p-2 text-left">
+                            <div class="mb-2">{{ question.author.username }}</div>
+                            <div>{{ question.create_date }}</div>
+                        </div>
+                    </div>
+                    {% if request.user == question.author %}  {% comment %} 수정 버튼은 로그인한 사용자와 글쓴이가 동일한 경우에만 노출되도록 적용 {% endcomment %}
+                    <div class="my-3">
+                        <a href="{% url 'pybo:question_modify' question.id  %}"   {% comment %} URL매핑을 추가 필요함 {% endcomment %}
+                            class="btn btn-sm btn-outline-secondary">수정</a>
+                        <a href="#" class="delete btn btn-sm btn-outline-secondary"  {% comment %} <삭제> 버튼은 <수정> 버튼과는 달리 href 속성값을 "#"로 설정 {% endcomment %}
+                            data-uri="{% url 'pybo:question_delete' question.id  %}">삭제</a>
+                            {% comment %} 삭제를 실행할 URL을 얻기 위해 data-uri 속성을 추가, <삭제> 버튼이 눌리는 이벤트를 확인할 수 있도록 class 속성에 "delete" 항목 추가 {% endcomment %}
+                            {% comment %} data-uri 속성은 제이쿼리에서 $(this).data('uri')와 같이 사용하여 그 값을 얻을 수 있음 {% endcomment %}
+                    </div>
                     {% endif %}
+                    <!-- 질문 댓글 Start -->
+                    {% if question.comment_set.count > 0 %}
+                    <div class="mt-3">
+                    {% for comment in question.comment_set.all %}  <!-- 등록한 댓글을 출력 -->
+                    {% comment %} 질문에 등록된 댓글을 보여 주도록 여기부터 {% endfor %} 사이에 댓글 내용과 글쓴이, 작성일시를 출력 {% endcomment %}
+                    {% comment %} 댓글 글쓴이와 로그인한 사용자가 같으면 '수정', '삭제' 링크가 보이고, for 문 바깥쪽에는 댓글을 작성할 수 있는 '댓글 추가 ..' 링크도 추가 {% endcomment %}
+                        <div class="comment py-2 text-muted">  <!-- 댓글 각각에 comment 스타일 지정 -->
+                            <span style="white-space: pre-line;">{{ comment.content }}</span>
+                            <span>
+                                - {{ comment.author }}, {{ comment.create_date }}
+                                {% if comment.modify_date %}
+                                (수정:{{ comment.modify_date }})
+                                {% endif %}
+                            </span>
+                            {% if request.user == comment.author %}
+                            <a href="{% url 'pybo:comment_modify_question' comment.id  %}" class="small">수정</a>,
+                            <a href="#" class="small delete" 
+                                data-uri="{% url 'pybo:comment_delete_question' comment.id  %}">삭제</a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <a href="{% url 'pybo:comment_create_question' question.id  %}" 
+                            class="small"><small>댓글 추가 ..</small></a>  <!-- 댓글 추가 링크 -->
+                    </div>
+                    <!-- 질문 댓글 End -->
                 </div>
-            {% endfor %}
             </div>
-            {% endif %}
-            <div>
-                <a href="{% url 'pybo:comment_create_question' question.id  %}" 
-                class="small"><small>댓글 추가 ..</small></a>  <!-- 댓글 추가 링크 -->
-            </div>
-            <!-- 질문 댓글 End -->
         </div>
     </div>
     <h5 class="border-bottom my-3 py-2">{{question.answer_set.count}}개의 답변이 있습니다.</h5>
     {% for answer in question.answer_set.all %}
-    <div class="card my-3">
-        <div class="card-body">
-            <div class="card-text" style="white-space: pre-line;">{{ answer.content }}</div>
-            <div class="d-flex justify-content-end">
-                {% if answer.modify_date %}     # 수정일시 버튼 보이도록
-                <div class="badge badge-light p-2 text-left mx-3">
-                    <div class="mb-2">수정일시</div>
-                    <div>{{ answer.modify_date }}</div>
-                </div>
-                {% endif %}
-                <div class="badge badge-light p-2 text-left">    {% comment %} 글쓴이와 작성일시가 함께 보이도록 수정 {% endcomment %}
-                    <div class="mb-2">{{ answer.author.username }}</div>
-                    <div>{{ answer.create_date }}</div>
-                </div>
-            </div>
-            {% if request.user == answer.author %}    {% comment %} 답변 목록 출력 위치에 답변 수정 버튼 추가 {% endcomment %}
-            <div class="my-3">
-                <a href="{% url 'pybo:answer_modify' answer.id  %}" 
-                class="btn btn-sm btn-outline-secondary">수정</a>
-                <a href="#" class="delete btn btn-sm btn-outline-secondary "  {% comment %} 답변을 삭제할 수 있는 버튼 {% endcomment %}
-                data-uri="{% url 'pybo:answer_delete' answer.id  %}">삭제</a>
-            </div>
-            {% endif %}
-            {% if answer.comment_set.count > 0 %}
-            {% comment %} 질문 댓글과 다른점은 question.comment_set 대신 answer.comment_set을 사용, 답변의 댓글을 <수정>, <삭제>, <추가> 시 호출되는 URL만 다름 {% endcomment %}
-            <div class="mt-3">
-            {% for comment in answer.comment_set.all %}
-                <div class="comment py-2 text-muted">
-                    <span style="white-space: pre-line;">{{ comment.content }}</span>
-                    <span>
-                        - {{ comment.author }}, {{ comment.create_date }}
-                        {% if comment.modify_date %}
-                        (수정:{{ comment.modify_date }})
+    <div class="row my-3">
+        {% comment %} 답변의 추천수를 표시하고, 답변을 추천할 수있는 버튼을 질문 상세 템플릿에 아래 같이 추가 {% endcomment %}
+        <div class="col-1">  <!-- 추천영역 -->
+            <div class="bg-light text-center p-3 border font-weight-bolder mb-1">{{answer.voter.count}}</div>
+            <a href="#" data-uri="{% url 'pybo:vote_answer' answer.id  %}" 
+                class="recommend btn btn-sm btn-secondary btn-block my-1">추천</a>
+        </div>
+        <div class="col-11">  <!-- 답변영역 -->
+            <!-- 기존내용 -->
+            <div class="card">   <!-- my-3 삭제 -->
+                <div class="card-body">
+                    <div class="card-text" style="white-space: pre-line;">{{ answer.content }}</div>
+                    <div class="d-flex justify-content-end">
+                        {% if answer.modify_date %}     # 수정일시 버튼 보이도록
+                        <div class="badge badge-light p-2 text-left mx-3">
+                            <div class="mb-2">수정일시</div>
+                            <div>{{ answer.modify_date }}</div>
+                        </div>
                         {% endif %}
-                    </span>
-                    {% if request.user == comment.author %}
-                    <a href="{% url 'pybo:comment_modify_answer' comment.id  %}" class="small">수정</a>,
-                    <a href="#" class="small delete"
-                    data-uri="{% url 'pybo:comment_delete_answer' comment.id  %}">삭제</a>
+                        <div class="badge badge-light p-2 text-left">    {% comment %} 글쓴이와 작성일시가 함께 보이도록 수정 {% endcomment %}
+                            <div class="mb-2">{{ answer.author.username }}</div>
+                            <div>{{ answer.create_date }}</div>
+                        </div>
+                    </div>
+                    {% if request.user == answer.author %}    {% comment %} 답변 목록 출력 위치에 답변 수정 버튼 추가 {% endcomment %}
+                    <div class="my-3">
+                        <a href="{% url 'pybo:answer_modify' answer.id  %}" 
+                        class="btn btn-sm btn-outline-secondary">수정</a>
+                        <a href="#" class="delete btn btn-sm btn-outline-secondary "  {% comment %} 답변을 삭제할 수 있는 버튼 {% endcomment %}
+                        data-uri="{% url 'pybo:answer_delete' answer.id  %}">삭제</a>
+                    </div>
                     {% endif %}
+                    {% if answer.comment_set.count > 0 %}
+                    {% comment %} 질문 댓글과 다른점은 question.comment_set 대신 answer.comment_set을 사용, 답변의 댓글을 <수정>, <삭제>, <추가> 시 호출되는 URL만 다름 {% endcomment %}
+                    <div class="mt-3">
+                    {% for comment in answer.comment_set.all %}
+                        <div class="comment py-2 text-muted">
+                            <span style="white-space: pre-line;">{{ comment.content }}</span>
+                            <span>
+                                - {{ comment.author }}, {{ comment.create_date }}
+                                {% if comment.modify_date %}
+                                (수정:{{ comment.modify_date }})
+                                {% endif %}
+                            </span>
+                            {% if request.user == comment.author %}
+                            <a href="{% url 'pybo:comment_modify_answer' comment.id  %}" class="small">수정</a>,
+                            <a href="#" class="small delete"
+                            data-uri="{% url 'pybo:comment_delete_answer' comment.id  %}">삭제</a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <a href="{% url 'pybo:comment_create_answer' answer.id  %}"
+                        class="small"><small>댓글 추가 ..</small></a>
+                    </div>
                 </div>
-            {% endfor %}
-            </div>
-            {% endif %}
-            <div>
-                <a href="{% url 'pybo:comment_create_answer' answer.id  %}"
-                class="small"><small>댓글 추가 ..</small></a>
             </div>
         </div>
     </div>
@@ -136,7 +159,7 @@
         <div class="form-group">
             {% comment %} <textarea name="content" id="content" class="form-control" rows="10"></textarea> {% endcomment %}
             <textarea {% if not user.is_authenticated %}disabled{% endif %}
-            name="content" id="content" class="form-control" rows="10"></textarea>
+                name="content" id="content" class="form-control" rows="10"></textarea>
             {% comment %} 로그인 상태가 아닌 경우 textarea 태그에 disabled 속성을 적용하여 입력을 못하게 만듬, 
             {% if not user.is_authenticated %} 태그는 현재 사용자가 로그아웃 상태인지를 체크하는 태그 {% endcomment %}
         </div>
@@ -153,6 +176,12 @@ $(document).ready(function(){
             location.href = $(this).data('uri');
         }
     });
+$(".recommend").on('click', function() {
+        if(confirm("정말로 추천하시겠습니까?")) {
+            location.href = $(this).data('uri');
+        }
+    });
 });
 </script>
 {% endblock %}
+{% comment %} <추천> 버튼을 클릭했을 때 '정말로 추천하시겠습니까?'라는 확인 창  {% endcomment %}

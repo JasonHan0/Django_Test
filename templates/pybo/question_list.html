@@ -7,6 +7,7 @@
         <thead>
         <tr class="text-center thead-dark">
             <th>번호</th>
+            <th>추천</th>
             <th style="width:50%">제목</th>
             <th>작성자</th>
             {% comment %} <th>작성자</th> 항목을 추가
@@ -24,6 +25,11 @@
                 <!-- 번호 = 전체건수 - 시작인덱스 - 현재인덱스 + 1 -->
                 <!-- 전체건수: question_list.paginator.count / 시작인덱스: question_list.start_index / 현재인덱스: forloop.counter0 -->
                 {{ question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1 }}
+            </td>
+            <td>
+                {% if question.voter.all.count > 0 %}
+                <span class="badge badge-warning px-2 py-1">{{ question.voter.all.count }}</span>
+                {% endif %}
             </td>
             <td class="text-left">                {% comment %} 제목을 왼쪽 정렬하도록 text-left 클래스를 추가 {% endcomment %}
                 <a href="{% url 'pybo:detail' question.id %}">{{ question.subject }}</a>    <!-- for문에 의해 대입된 question 객체의 제목을 출력 -->
