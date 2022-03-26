@@ -2,4 +2,7 @@
 *.crdownload
 Scripts/
 migrations/
-pybo/__pycache__/views.cpython-38.pyc
+.idea
+db.sqlite3
+*.pyc
+__pycache__
