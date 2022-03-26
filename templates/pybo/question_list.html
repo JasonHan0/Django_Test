@@ -1,121 +1,96 @@
-{% extends 'base.html' %} {% load pybo_filter %} {% block content %}
+{% extends 'base.html' %}
+{% load pybo_filter %}
+{% block content %}
 <!-- 템플릿 상단에 extends 문이 있을 경우 load문은 extends 문 다음에 위치 -->
 <div class="container my-3">
-  <table class="table">
-    <thead>
-      <tr class="thead-dark">
-        <th>번호</th>
-        <th>제목pybo_filter</th>
-        <th>작성일시</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% if question_list %}
-      <!--  question_list가 있다면 (question_list는 render 함수로 전달받은 "질문 목록" 데이터) -->
-      {% for question in question_list %}
-      <!--  question_list를 반복하며 순차적으로 하나씩 question에 대입 -->
-      <tr>
-        <td>
-          <!-- 페이지에서 게시물 번호가 항상 1부터 시작되는 오류 해결 -->
-          <!-- 번호 = 전체건수 - 시작인덱스 - 현재인덱스 + 1 -->
-          <!-- 전체건수: question_list.paginator.count / 시작인덱스: question_list.start_index / 현재인덱스: forloop.counter0 -->
-          {{
-          question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1
-          }}
-        </td>
-        <td>
-          <a href="{% url 'pybo:detail' question.id %}"
-            >{{ question.subject }}</a
-          >
-          <!-- for문에 의해 대입된 question 객체의 제목을 출력 -->
-          <!-- 아래 조건문은 질문 목록에 '해당 질문에 달린 답변 개수'를 표시할 수 있는 기능 // 답변 개수는 다음처럼 게시물 제목 바로 오른쪽에 표시 -->
-          {% if question.answer_set.count > 0 %}
-          <!-- 답변이 있는 경우 검사 -->
-          <span class="text-danger small ml-2"
-            >{{ question.answer_set.count }}</span
-          >
-          <!-- 답변 개수를 표시 -->
-          {% endif %}
-        </td>
-        <td>{{ question.create_date }}</td>
-      </tr>
-      {% endfor %}
-      <!-- for문에 의해 대입된 question 객체의 id 번호를 출력 -->
-      {% else %}
-      <tr>
-        <td colspan="3">질문이 없습니다.</td>
-      </tr>
-      {% endif %}
-    </tbody>
-  </table>
-  <!-- 페이징처리 시작 -->
-  <ul class="pagination justify-content-center">
-    <!-- 이전페이지 -->
-    {% if question_list.has_previous %}
-    <!-- 이전 페이지가 있는지 체크 -->
+    <table class="table">
+        <thead>
+        <tr class="thead-dark">
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성일시</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if question_list %}                  <!--  question_list가 있다면 (question_list는 render 함수로 전달받은 "질문 목록" 데이터) -->
+        {% for question in question_list %}     <!--  question_list를 반복하며 순차적으로 하나씩 question에 대입 -->
+        <tr>
+            <td>
+                <!-- 페이지에서 게시물 번호가 항상 1부터 시작되는 오류 해결 -->
+                <!-- 번호 = 전체건수 - 시작인덱스 - 현재인덱스 + 1 -->
+                <!-- 전체건수: question_list.paginator.count / 시작인덱스: question_list.start_index / 현재인덱스: forloop.counter0 -->
+                {{ question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1 }}
+            </td>
+            <td>
+                <a href="{% url 'pybo:detail' question.id %}">{{ question.subject }}</a>    <!-- for문에 의해 대입된 question 객체의 제목을 출력 -->
+                <!-- 아래 조건문은 질문 목록에 '해당 질문에 달린 답변 개수'를 표시할 수 있는 기능 // 답변 개수는 다음처럼 게시물 제목 바로 오른쪽에 표시 -->
+                {% if question.answer_set.count > 0 %}            <!-- 답변이 있는 경우 검사 -->                   
+                <span class="text-danger small ml-2">{{ question.answer_set.count }}</span>    <!-- 답변 개수를 표시 -->
+                {% endif %}
+            </td>
+            <td>{{ question.create_date }}</td>
+        </tr>
+        {% endfor %}                            <!-- for문에 의해 대입된 question 객체의 id 번호를 출력 -->       
+        {% else %}
+        <tr>
+            <td colspan="3">질문이 없습니다.</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+    <!-- 페이징처리 시작 -->
+    <ul class="pagination justify-content-center">
+        <!-- 이전페이지 -->
+        {% if question_list.has_previous %}        <!-- 이전 페이지가 있는지 체크 -->
 
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page }}">처음</a>
-      <!-- 첫페이지 버튼 생성-->
-    </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page }}">처음</a>       <!-- 첫페이지 버튼 생성-->
+        </li>
 
-    <li class="page-item">
-      <a class="page-link" href="?page={{ question_list.previous_page_number }}"
-        >이전</a
-      >
-    </li>
-    {% else %}
-    <li class="page-item disabled">
-      <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
-    </li>
-    {% endif %}
-    <!-- 페이지리스트 -->
-    {% for page_number in question_list.paginator.page_range %}
-    <!-- 페이지 리스트 루프 -->
-    {% if page_number >= question_list.number|add:-5 and page_number <=
-    question_list.number|add:5 %}
-    <!-- 페이지 표시 제한 기능 구현 -->
-    <!-- |add:-5, |add:5 는 템플릿 필터로 |add:-5는 5만큼 빼라는 의미이고 |add:5는 5만큼 더하라는 의미 -->
-    <!-- 페이지 리스트가 현재 페이지 기준으로 좌우 5개씩 보이도록 만듬  -->
-    <!-- 현재 페이지를 의미하는 question_list.number보다 5만큼 크거나 작은 값만 표시되도록 만든 것 -->
-    <!-- 만든 페이징 기능에 '처음'과 '마지막' 링크를 추가하고 '…' 생략 기호까지 추가하면 더 완성도 높은 페이징 기능이 될 것 -->
-    {% if page_number == question_list.number %}
-    <!-- 현재 페이지와 같은지 체크 -->
-    <li class="page-item active" aria-current="page">
-      <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
-    </li>
-    {% else %}
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
-    </li>
-    {% endif %} {% endif %}
-    <!-- 페이지 표시 제한 기능 조건문 닫기 -->
-    {% endfor %}
-    <!-- 다음페이지 -->
-    {% if question_list.has_next %}
-    <!-- 다음 페이지가 있는지 체크	 -->
-    <li class="page-item">
-      <a class="page-link" href="?page={{ question_list.next_page_number }}"
-        >다음</a
-      >
-    </li>
-    <li class="page-item">
-      <span class="page-link" href="?page={{ max_index }}">...</span>
-      <!-- ... 생략 버튼 생성  -->
-    </li>
-    <li class="page-item">
-      <a class="page-link" href="?page={{ max_index }}">마지막</a>
-      <!-- 마지막 페이지 버튼 생성  -->
-    </li>
-    {% else %}
-    <li class="page-item disabled">
-      <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
-    </li>
-    {% endif %}
-  </ul>
-  <!-- 페이징처리 끝 -->
-  <a href="{% url 'pybo:question_create' %}" class="btn btn-primary"
-    >질문 등록하기</a
-  >
+        <li class="page-item">
+            <a class="page-link" href="?page={{ question_list.previous_page_number }}">이전</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
+        </li>
+        {% endif %}
+        <!-- 페이지리스트 -->
+        {% for page_number in question_list.paginator.page_range %}        <!-- 페이지 리스트 루프 -->
+        {% if page_number >= question_list.number|add:-5 and page_number <= question_list.number|add:5 %}        <!-- 페이지 표시 제한 기능 구현 -->
+        <!-- |add:-5, |add:5 는 템플릿 필터로 |add:-5는 5만큼 빼라는 의미이고 |add:5는 5만큼 더하라는 의미 -->
+        <!-- 페이지 리스트가 현재 페이지 기준으로 좌우 5개씩 보이도록 만듬  -->
+        <!-- 현재 페이지를 의미하는 question_list.number보다 5만큼 크거나 작은 값만 표시되도록 만든 것 -->
+        <!-- 만든 페이징 기능에 '처음'과 '마지막' 링크를 추가하고 '…' 생략 기호까지 추가하면 더 완성도 높은 페이징 기능이 될 것 -->
+            {% if page_number == question_list.number %}            <!-- 현재 페이지와 같은지 체크 -->
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            </li>
+            {% endif %}
+        {% endif %}        <!-- 페이지 표시 제한 기능 조건문 닫기 -->
+        {% endfor %}
+        <!-- 다음페이지 -->
+        {% if question_list.has_next %}        <!-- 다음 페이지가 있는지 체크	 -->
+        <li class="page-item">
+            <a class="page-link" href="?page={{ question_list.next_page_number }}">다음</a>
+        </li>        
+        <li class="page-item">
+            <span class="page-link" href="?page={{ max_index }}">...</span>     <!-- ... 생략 버튼 생성  -->
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ max_index }}">마지막</a>        <!-- 마지막 페이지 버튼 생성  -->
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+        </li>
+        {% endif %}
+    </ul>
+    <!-- 페이징처리 끝 -->
+    <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">질문 등록하기</a>
 </div>
 {% endblock %}

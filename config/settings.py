@@ -1,5 +1,4 @@
 from pathlib import Path
-<< << << < HEAD
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -128,7 +127,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / 'static'
 ]
 
 # 로그인 성공후 이동하는 URL
@@ -137,7 +136,6 @@ LOGIN_REDIRECT_URL = '/'
 
 # 로그아웃시 이동하는 URL
 LOGOUT_REDIRECT_URL = '/'   # 로그아웃 시 "/" 페이지로 이동하기 위해 LOGOUT_REDIRECT_URL을 설정
-== == == =
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -267,4 +265,3 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
->>>>>> > e45056403b964f21e99db7b38d412e798b90cf48
