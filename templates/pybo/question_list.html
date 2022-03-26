@@ -5,29 +5,34 @@
 <div class="container my-3">
     <table class="table">
         <thead>
-        <tr class="thead-dark">
+        <tr class="text-center thead-dark">
             <th>번호</th>
-            <th>제목</th>
+            <th style="width:50%">제목</th>
+            <th>작성자</th>
+            {% comment %} <th>작성자</th> 항목을 추가
+            th 엘리먼트를 가운데 정렬하도록 tr 엘리먼트에 text-center 클래스를 추가
+            제목의 너비가 전체에서 50%를 차지하도록 style="width:50%"도 지정 {% endcomment %}
             <th>작성일시</th>
         </tr>
         </thead>
         <tbody>
         {% if question_list %}                  <!--  question_list가 있다면 (question_list는 render 함수로 전달받은 "질문 목록" 데이터) -->
         {% for question in question_list %}     <!--  question_list를 반복하며 순차적으로 하나씩 question에 대입 -->
-        <tr>
+        <tr class="text-center">            {% comment %} 테이블 내용을 가운데 정렬하도록 tr 엘리먼트에 text-center 클래스를 추가 {% endcomment %}
             <td>
                 <!-- 페이지에서 게시물 번호가 항상 1부터 시작되는 오류 해결 -->
                 <!-- 번호 = 전체건수 - 시작인덱스 - 현재인덱스 + 1 -->
                 <!-- 전체건수: question_list.paginator.count / 시작인덱스: question_list.start_index / 현재인덱스: forloop.counter0 -->
                 {{ question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1 }}
             </td>
-            <td>
+            <td class="text-left">                {% comment %} 제목을 왼쪽 정렬하도록 text-left 클래스를 추가 {% endcomment %}
                 <a href="{% url 'pybo:detail' question.id %}">{{ question.subject }}</a>    <!-- for문에 의해 대입된 question 객체의 제목을 출력 -->
                 <!-- 아래 조건문은 질문 목록에 '해당 질문에 달린 답변 개수'를 표시할 수 있는 기능 // 답변 개수는 다음처럼 게시물 제목 바로 오른쪽에 표시 -->
                 {% if question.answer_set.count > 0 %}            <!-- 답변이 있는 경우 검사 -->                   
                 <span class="text-danger small ml-2">{{ question.answer_set.count }}</span>    <!-- 답변 개수를 표시 -->
                 {% endif %}
             </td>
+            <td>{{ question.author.username }}</td>  <!-- 질문의 글쓴이를 표시 -->
             <td>{{ question.create_date }}</td>
         </tr>
         {% endfor %}                            <!-- for문에 의해 대입된 question 객체의 id 번호를 출력 -->       
