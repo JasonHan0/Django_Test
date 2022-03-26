@@ -37,5 +37,10 @@
 <script src="{% static 'jquery-3.6.0.min.js' %}"></script>
 <!-- Bootstrap JS -->
 <script src="{% static 'bootstrap.min.js' %}"></script>
+{% comment %} 템플릿에서 jQuery를 안전하게 사용하려면 base.html 수정 {% endcomment %}
+<!-- 자바스크립트 Start -->
+{% block script %}
+{% endblock %}
+<!-- 자바스크립트 End -->
 </body>
 </html>
