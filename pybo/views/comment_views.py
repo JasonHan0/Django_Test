@@ -1,7 +1,7 @@
 from django.contrib import messages  # 오류를 발생시키기 위해 messages 모듈을 이용
 # messages는 장고가 제공하는 모듈로 넌필드 오류(non-field error)를 발생시킬 경우에 사용
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect    # render 함수는 파이썬 데이터를 템플릿에 적용하여 HTML로 반환하는 함수
+from django.shortcuts import render, get_object_or_404, redirect, resolve_url    # render 함수는 파이썬 데이터를 템플릿에 적용하여 HTML로 반환하는 함수
 from django.utils import timezone
 
 from ..forms import CommentForm
@@ -26,7 +26,8 @@ def comment_create_question(request, question_id):
             comment.question = question
             comment.save()
             # 댓글이 저장된 후에는 댓글을 작성한 질문 상세(pybo:detail) 화면으로 리다이렉트
-            return redirect('pybo:detail', question_id=question.id)
+            return redirect('{}#comment_{}'.format(
+                resolve_url('pybo:detail', question_id=comment.question.id), comment.id))
     else:
         form = CommentForm()
     context = {'form': form}
@@ -52,7 +53,8 @@ def comment_modify_question(request, comment_id):
             comment = form.save(commit=False)
             comment.modify_date = timezone.now()    # 업데이트 시 modify_date에 수정일시를 반영
             comment.save()
-            return redirect('pybo:detail', question_id=comment.question.id)
+            return redirect('{}#comment_{}'.format(
+                resolve_url('pybo:detail', question_id=comment.question.id), comment.id))
     else:
         form = CommentForm(instance=comment)
     context = {'form': form}
@@ -91,7 +93,8 @@ def comment_create_answer(request, answer_id):
             comment.create_date = timezone.now()
             comment.answer = answer
             comment.save()
-            return redirect('pybo:detail', question_id=comment.answer.question.id)
+            return redirect('{}#comment_{}'.format(
+                resolve_url('pybo:detail', question_id=comment.answer.question.id), comment.id))
             # 답변의 댓글인 경우 question_id 값을 알기 위해 comment.answer.question 처럼 답변(answer)을 통해 질문(question)을 얻을 수 있도록 함
     else:
         form = CommentForm()
@@ -115,7 +118,8 @@ def comment_modify_answer(request, comment_id):
             comment = form.save(commit=False)
             comment.modify_date = timezone.now()
             comment.save()
-            return redirect('pybo:detail', question_id=comment.answer.question.id)
+            return redirect('{}#comment_{}'.format(
+                resolve_url('pybo:detail', question_id=comment.answer.question.id), comment.id))
     else:
         form = CommentForm(instance=comment)
     context = {'form': form}

@@ -1,7 +1,7 @@
 from django.contrib import messages  # 오류를 발생시키기 위해 messages 모듈을 이용
 # messages는 장고가 제공하는 모듈로 넌필드 오류(non-field error)를 발생시킬 경우에 사용
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect    # render 함수는 파이썬 데이터를 템플릿에 적용하여 HTML로 반환하는 함수
+from django.shortcuts import render, get_object_or_404, redirect, resolve_url    # render 함수는 파이썬 데이터를 템플릿에 적용하여 HTML로 반환하는 함수
 from django.utils import timezone
 
 from ..forms import AnswerForm
@@ -28,7 +28,9 @@ def answer_create(request, question_id):
             answer.create_date = timezone.now()
             answer.question = question
             answer.save()
-            return redirect('pybo:detail', question_id=question.id)
+            return redirect('{}#answer_{}'.format(
+                resolve_url('pybo:detail', question_id=question.id), answer.id))  # 답변을 등록하거나 수정할 때  html에서 지정한 앵커 태그로 이동하도록 코드 수정
+            # pybo:detail URL에 #answer_2와 같은 앵커를 추가하기 위해 resolve_url 함수(실제 호출되는 URL 문자열을 리턴)를 사용
     else:   # 답변 등록은 POST 방식만 사용되기 때문에 if .. else 구문에서 else는 호출되지 않음 //  다만, 여기에서는 패턴의 통일성을 위해 남겨 둠
         form = AnswerForm()
     context = {'question': question, 'form': form}
@@ -51,7 +53,8 @@ def answer_modify(request, answer_id):
             answer = form.save(commit=False)
             answer.modify_date = timezone.now()
             answer.save()
-            return redirect('pybo:detail', question_id=answer.question.id)
+            return redirect('{}#answer_{}'.format(
+                resolve_url('pybo:detail', question_id=answer.question.id), answer.id))
     else:
         form = AnswerForm(instance=answer)
     context = {'answer': answer, 'form': form}
