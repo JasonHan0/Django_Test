@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container my-3">
+        <div class="row">               {% comment %} 계정생성을 할 수 있는 링크를 추가 // common/urls.py 파일에 계정생성을 위한 URL 매핑을 추가 {% endcomment %}
+        <div class="col-4">
+            <h4>로그인</h4>
+        </div>
+        <div class="col-8 text-right">
+            <span>또는 <a href="{% url 'common:signup' %}">계정을 만드세요.</a></span>
+        </div>
+    </div>
     <form method="post" class="post-form" action="{% url 'common:login' %}">
         {% csrf_token %}
         {% include "form_errors.html" %}       <!-- form_errors.html 템플릿은 로그인 실패시 로그인이 왜 실패했는지 알려주는 역할 -->
