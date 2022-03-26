@@ -1,8 +1,9 @@
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# 기존 settings.py 파일의 위치는 /config인데 base.py 파일의 위치는 /config/settings로 하위 디렉토리로 이동하여 .parent를 한 번 더 사용하여 BASE_DIR을 설정
+# /crsd/config/settings/base.py에서 총 세번의 .parent가 사용되었으므로 BASE_DIR은 결국 /crsd
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
