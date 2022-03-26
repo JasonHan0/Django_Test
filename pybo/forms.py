@@ -6,7 +6,7 @@
 우선 수작업에 불 필요한 forms.py 파일의 widget 항목을 제거
 """
 from django import forms
-from pybo.models import Question, Answer
+from pybo.models import Question, Answer, Comment
 
 # 화면을 깔끔하게 만들어 줄 수 있는 부트스트랩을 준비
 # 하지만 {{ form.as_p }} 태그는 HTML 코드를 자동으로 생성하기 때문에 부트스트랩을 적용할 수가 없음
@@ -37,6 +37,17 @@ class AnswerForm(forms.ModelForm):
         labels = {
             'content': '답변내용',
         }
+
+
+class CommentForm(forms.ModelForm):  # 댓글 등록시 사용할 CommentForm
+    class Meta:
+        model = Comment
+        fields = ['content']
+        labels = {
+            'content': '댓글내용',  # 댓글 작성시에는 content 필드만 사용
+        }
+
+
 # class Userlistentime(forms.ModelForm):
 #     class Meta:
 #         model = Music  # 사용할 모델

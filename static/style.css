@@ -5,3 +5,9 @@
 input[type=submit] {
     margin-top:10px;
 } */
+
+/* comment 클래스는 댓글 각각의 상단에 점선을 추가하고 글꼴 크기를 0.7em으로 설정하는 스타일 */
+.comment {
+    border-top:dotted 1px #ddd;
+    font-size:0.7em;
+}

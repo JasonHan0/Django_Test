@@ -29,3 +29,16 @@ class Answer(models.Model):
     # null=True는 데이터베이스에서 modify_date 칼럼에 null을 허용한다는 의미
     # blank=True는 form.is_valid()를 통한 입력 데이터 검사 시 값이 없어도 된다는 의미
     # 즉, null = True, blank = True는 어떤 조건으로든 값을 비워둘 수 있음을 의미(수정일시는 수정한 경우에만 생성되는 데이터이므로)
+
+
+class Comment(models.Model):    # 댓글 모델
+    author = models.ForeignKey(User, on_delete=models.CASCADE)          # 댓글 글쓴이
+    # question, answer 속성에는 질문이나 답변이 삭제될 경우에 해당 댓글도 삭제될 수 있도록 on_delete=models.CASCADE 옵션을 설정
+    content = models.TextField()                                        # 댓글 내용
+    create_date = models.DateTimeField()                                # 댓글 작성일시
+    modify_date = models.DateTimeField(null=True, blank=True)           # 댓글 수정일시
+    # 댓글 모델의 question 또는 answer 둘 중에 하나에만 값이 저장되므로 두 개의 속성은 모두 null=True, blank=True 를 설정
+    question = models.ForeignKey(                                       # 이 댓글이 달린 질문
+        Question, null=True, blank=True, on_delete=models.CASCADE)
+    answer = models.ForeignKey(                                         # 이 댓글이 달린 답변
+        Answer, null=True, blank=True, on_delete=models.CASCADE)
