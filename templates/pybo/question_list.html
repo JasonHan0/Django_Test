@@ -3,6 +3,23 @@
 {% block content %}
 <!-- 템플릿 상단에 extends 문이 있을 경우 load문은 extends 문 다음에 위치 -->
 <div class="container my-3">
+    <div class="row justify-content-between my-3">  {% comment %}  검색어를 입력할 수 있는 텍스트창 생성, 양쪽정렬 justify-content-between로 변경 {% endcomment %}
+        <div class="col-2">
+            <select class="form-control so">    {% comment %} 검색조건을 추가 {% endcomment %}
+                {% comment %}  현재 선택된 정렬기준 값을 자바스크립트를 통해 알아내기 위해 select 태그의 class에 so를 추가 {% endcomment %}
+                <option value="recent" {% if so == 'recent' %}selected{% endif %}>최신순</option>
+                <option value="recommend" {% if so == 'recommend' %}selected{% endif %}>추천순</option>
+                <option value="popular" {% if so == 'popular' %}selected{% endif %}>인기순</option>
+            </select>
+        </div>
+        <div class="col-4 input-group">
+            <input type="text" class="form-control kw" value="{{ kw|default_if_none:'' }}">
+            {% comment %} 자바 스크립트에서 이 텍스트창에 입력된 값을 읽기 위해 위와 같이 텍스트창 class 속성에 kw라는 값을 추가 {% endcomment %}
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
+            </div>
+        </div>
+    </div>
     <table class="table">
         <thead>
         <tr class="text-center thead-dark">
@@ -53,13 +70,12 @@
     <ul class="pagination justify-content-center">
         <!-- 이전페이지 -->
         {% if question_list.has_previous %}        <!-- 이전 페이지가 있는지 체크 -->
-
         <li class="page-item">
-            <a class="page-link" href="?page={{ page }}">처음</a>       <!-- 첫페이지 버튼 생성-->
+            <a class="page-link" href="?page={{ 1 }}">처음</a>       <!-- 첫페이지 버튼 생성-->
         </li>
-
         <li class="page-item">
-            <a class="page-link" href="?page={{ question_list.previous_page_number }}">이전</a>
+            <a class="page-link" data-page="{{ question_list.previous_page_number }}" href="#">이전</a>
+            {% comment %} 모든 페이지 링크(처음/마지막 제외)를 href 속성에 직접 입력하는 대신 data-page 속성으로 값을 읽을 수 있도록 변경 {% endcomment %}
         </li>
         {% else %}
         <li class="page-item disabled">
@@ -75,11 +91,11 @@
         <!-- 만든 페이징 기능에 '처음'과 '마지막' 링크를 추가하고 '…' 생략 기호까지 추가하면 더 완성도 높은 페이징 기능이 될 것 -->
             {% if page_number == question_list.number %}            <!-- 현재 페이지와 같은지 체크 -->
             <li class="page-item active" aria-current="page">
-                <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+                <a class="page-link" data-page="{{ page_number }}" href="#">{{ page_number }}</a>
             </li>
             {% else %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+                <a class="page-link" data-page="{{ page_number }}" href="#">{{ page_number }}</a>
             </li>
             {% endif %}
         {% endif %}        <!-- 페이지 표시 제한 기능 조건문 닫기 -->
@@ -87,7 +103,7 @@
         <!-- 다음페이지 -->
         {% if question_list.has_next %}        <!-- 다음 페이지가 있는지 체크	 -->
         <li class="page-item">
-            <a class="page-link" href="?page={{ question_list.next_page_number }}">다음</a>
+            <a class="page-link" data-page="{{ question_list.next_page_number }}" href="#">다음</a>
         </li>        
         <li class="page-item">
             <span class="page-link" href="?page={{ max_index }}">...</span>     <!-- ... 생략 버튼 생성  -->
@@ -104,4 +120,38 @@
     <!-- 페이징처리 끝 -->
     <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">질문 등록하기</a>
 </div>
+<form id="searchForm" method="get" action="{% url 'index' %}">   <!-- action 속성은 '폼이 전송되는 URL'이므로 질문 목록 URL인 {% url 'index' %}를 지정  -->
+{% comment %} GET 방식으로 요청해야 하므로 method 속성에 "get"을 설정 {% endcomment %}
+    <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+    {% comment %} kw와 page는 이전에 요청했던 값을 기억하고 있어야 하므로 value에 값을 대입 {% endcomment %}
+    {% comment %} 요청했던 kw와 page의 값은 index 함수로부터 전달받은 값 {% endcomment %}
+    <input type="hidden" id="page" name="page" value="{{ page }}">
+    {% comment %} searchForm에 정렬기준을 의미하는 input 엘리먼트 "so"를 추가 {% endcomment %}
+    <input type="hidden" id="so" name="so" value="{{ so }}">
+</form>
+{% endblock %}
+{% comment %} page, kw 파라미터를 동시에 요청할 수 있는 자바스크립트 추가 {% endcomment %}
+{% block script %}
+<script type='text/javascript'>
+$(document).ready(function(){
+    // class 속성값으로 "page-link"라는 값을 가지고 있는 링크를 클릭하면 위의 "page-link" 클래스가 있는 곳의 data-page 속성값을 읽음
+    $(".page-link").on('click', function() {  
+    // data-page 속성값을 읽어 searchForm의 page 필드에 설정하여 searchForm을 요청
+        $("#page").val($(this).data("page"));
+        $("#searchForm").submit();
+    });
+    // 검색버튼을 클릭하면 검색어 텍스트창에 입력된 값을 searchForm의 kw 필드에 설정하여 searchForm을 요청
+    $("#btn_search").on('click', function() {
+        $("#kw").val($(".kw").val());
+        // 검색버튼을 클릭하는 경우는 새로운 검색에 해당되므로 page에 항상 1을 설정하여 요청
+        $("#page").val(1);  // 검색버튼을 클릭할 경우 1페이지부터 조회한다.
+        $("#searchForm").submit();
+    });
+    $(".so").on('change', function() {      // 정렬 기준(select)을 변경할 때 searchForm 요청이 발생하도록 자바스크립트 추가
+        $("#so").val($(this).val());        // class가 so인 엘리먼트, 즉 정렬 조건에 해당하는 select의 값이 변경되면 그 값을 searchForm의 so 필드에 저장하여 searchForm을 요청
+        $("#page").val(1);
+        $("#searchForm").submit();
+    });
+});
+</script>
 {% endblock %}

@@ -47,4 +47,4 @@ class Comment(models.Model):    # 댓글 모델
     question = models.ForeignKey(                                       # 이 댓글이 달린 질문
         Question, null=True, blank=True, on_delete=models.CASCADE)
     answer = models.ForeignKey(                                         # 이 댓글이 달린 답변
-        Answer, null=True, blank=True, on_delete=models.CASCADE)
+        Answer, null=True, blank=True, on_delete=models.CASCADE)        
