@@ -1,3 +1,4 @@
+import django
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -135,3 +136,5 @@ LOGIN_REDIRECT_URL = '/'    # 로그인 성공 시 "/" 페이지로 이동할 �
 
 # 로그아웃시 이동하는 URL
 LOGOUT_REDIRECT_URL = '/'   # 로그아웃 시 "/" 페이지로 이동하기 위해 LOGOUT_REDIRECT_URL을 설정
+
+django.setup()
