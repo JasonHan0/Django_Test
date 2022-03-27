@@ -77,18 +77,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django_test' ,
+        'NAME': 'raw_data' ,
         'USER': 'admin',
         'PASSWORD': 'qwerty1!',
         'HOST': 'csrd.cksngv0eixsu.ap-northeast-2.rds.amazonaws.com',
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-}
-
-    }
-    
-}
+                    }
+                }   
+            }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
