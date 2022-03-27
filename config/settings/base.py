@@ -82,6 +82,7 @@ DATABASES = {
         'PASSWORD': 'qwerty1!',
         'HOST': 'csrd.cksngv0eixsu.ap-northeast-2.rds.amazonaws.com',
         'PORT': '3306',
+<<<<<<< HEAD
         # 'OPTIONS': {
         #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
 }
@@ -89,6 +90,13 @@ DATABASES = {
     }
     
 }
+=======
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+                    }
+                }   
+            }
+>>>>>>> abfd5f780a21f6ebd7effcb5b23f19e6330366f0
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
