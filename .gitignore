@@ -1,10 +1,6 @@
 
 *.crdownload
-Scripts/
-migrations/
 .idea
-db.sqlite3
 *.pyc
 /__pycache__
 __pycache__
-config/__pycache__/wsgi.cpython-38.pyc
