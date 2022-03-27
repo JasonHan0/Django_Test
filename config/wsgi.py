@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-=======
-"""
-WSGI config for config project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/4.0/howto/deployment/wsgi/
-"""
-
->>>>>>> parent of 5de8ffe (4-08 WSGI(위스키)에 대한 wsgi.py 주석 추가)
 import os
 
 from django.core.wsgi import get_wsgi_application
@@ -17,7 +5,7 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 application = get_wsgi_application()
-<<<<<<< HEAD
+
 # 이 파일에 선언된 application이 바로 장고의 애플리케이션
 # 이 파일은 장고 프로젝트 생성시 자동으로 만들어지며 특별한 경우가 아니고는 수정할 필요 없음
 
@@ -30,5 +18,3 @@ application = get_wsgi_application()
 #5. 파이보 시스템이 사용할 WSGI 애플리케이션은 장고
 #6. WSGI 서버는 웹 서버와 WSGI 애플리케이션 중간에 위치, 그래서 WSGI 서버는 WSGI 미들웨어(middleware) 또는 WSGI 컨테이너(container)
 #7. WSGI 서버는 항상 "wsgi.py" 파일을 경유하여 장고(django) 프로그램을 호출
-=======
->>>>>>> parent of 5de8ffe (4-08 WSGI(위스키)에 대한 wsgi.py 주석 추가)
